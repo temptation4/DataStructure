@@ -1,0 +1,544 @@
+import java.util.*;
+
+public class LinkedList {
+
+    Node head;
+
+    public static void main(String[] args) {
+
+
+        LinkedList list=new LinkedList();
+
+        // Insert the values
+       list = list.insertNode(list, 1);
+        list = list.insertNode(list, 2);
+        list = list.insertNode(list, 3);
+        list = list.insertNode(list, 4);
+
+
+        LinkedList list1=new LinkedList();
+
+        // Insert the values
+        list1 = list1.insertNode(list1, 2);
+        list1 = list1.insertNode(list1, 4);
+        list1 = list1.insertNode(list1, 6);
+        list1 = list1.insertNode(list1, 8);
+        list1 = list1.insertNode(list1, 10);
+
+        // Print the LinkedList
+        printList(list);
+        printList(list1);
+        reorderList(list.head);
+        printList(list);
+        reorderList(list.head);
+        Node rotateRightres = partition(list.head,3);
+        mergeTwoLists(list.head,list1.head);
+
+       Node prev = list.reverseKGroup(list.head,2);
+
+      /*  Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+
+        for(int i=0;i<n;i++)
+        {
+            list. insertNode(list, sc.nextInt());
+        }
+        int n1=sc.nextInt();
+
+        LinkedList list1=new LinkedList();
+        for(int i=0;i<n1;i++)
+        {
+            list.insertNode(list1, sc.nextInt());
+        }
+
+        display(list.head);
+        display(list1.head);*/
+
+        // Node newHead= mergeRecursiveTwoSortedLists(list.head,list1.head);
+      //  LinkedList sortedList= mergeTwoSortedLists(list.head,list1.head);
+        Node res =  mergeTwoLists(list.head,list1.head);
+        //  sumZero(list.head);
+        display(res);
+
+        // Node newHead=removeOddNode(list.head);
+        // removeLastNode(list.head);
+
+        // addAfterNode(list.head,0,new Node(3));
+        //  findMiddle(list.head);
+        //  Node newHead=reverse(list.head);
+        // display(newHead);
+    }
+
+
+    static void reorderList(Node head) {
+
+        Node temp = head;
+        List<Node> list = new ArrayList<>();
+        while(temp!= null) {
+            list.add(temp);
+            temp = temp.next;
+        }
+        temp = head;
+        Node temp1 = head;
+
+        while(list.size()>0) {
+            Node next = temp1.next;
+            temp1 = temp1.next;
+            int n = list.size();
+                temp.next = list.get(n-1);
+                list.remove(list.get(n-1));
+            temp.next.next = next;
+        }
+
+        temp.next = null;
+    }
+
+    public static void printList(LinkedList list)
+    {
+        Node currNode = list.head;
+
+        System.out.print("LinkedList: ");
+
+        // Traverse through the LinkedList
+        while (currNode != null) {
+            // Print the data at current node
+            System.out.print(currNode.data + " ");
+
+            // Go to next node
+            currNode = currNode.next;
+        }
+    }
+
+    static void removeNode(Node head,Node node)
+    {
+        if(head==null)
+        {
+            System.out.println("No data present");
+
+        }
+        else {
+            Node current=node.next;
+            Node  previous=node;
+            current=current.next;
+            previous.next=current.next;
+
+        }
+    }
+
+
+
+    Node push(Node head_ref, int data)
+    {
+       /* 1 & 2: Allocate the Node &
+                 Put in the data*/
+        Node new_node = new Node(data);
+
+        /* 3. Make next of new Node as head */
+        new_node.next = head_ref;
+
+        /* 4. Move the head to point to new Node */
+        head_ref = new_node;
+
+        /*5. return to link it back */
+        return head_ref;
+    }
+
+
+
+
+
+    static void sumZero(Node head)
+    {
+        Node current=head;
+        Set<Integer> set= new HashSet<>();
+        Node previous=null;
+        while(current.next!=null)
+        {
+            int data=current.data;
+            //Node previous=null;
+            set.add(data);
+            previous=current;
+            current=current.next;
+
+            if(current.data==0)
+            {
+                previous.next=current.next;
+            }
+
+            // current=current.next;
+
+        }
+    }
+
+    static Node mergeRecursiveTwoSortedLists(Node n1,Node n2)
+    {
+        Node current1=n1;
+        Node current2=n2;
+        Node res=null;
+        while (current1 != null && current2 != null) {
+            if (current1.data < current2.data) {
+                res=current1;
+                res.next= mergeRecursiveTwoSortedLists(current1.next,current2);
+                //  addAtLast(current1.next,current1.data);
+                //  current1 = current1.next;
+            } else {
+                res=current2;
+                res.next=    mergeRecursiveTwoSortedLists(current2,current2.next);
+                //  addAtLast(current2.next,current2.data);
+                //  current2 = current2.next;
+            }
+        }
+        if (current1 != null) {
+            return current2;
+        }
+        if (current2 != null) {
+            return   current1;
+        }
+        return res;
+    }
+
+
+    static LinkedList mergeTwoSortedLists(Node n1,Node n2)
+    {
+        Node current1=n1;
+        Node current2=n2;
+        LinkedList res = new LinkedList();
+        while (current1 != null && current2 != null) {
+            if (current1.data < current2.data) {
+                res.insertNode(res,current1.data);
+                current1 = current1.next;
+            } else {
+                res.insertNode(res,current2.data);
+                current2 = current2.next;
+            }
+        }
+        while (current1 != null) {
+            res.insertNode(res,current1.data);
+            current1 = current1.next;
+        }
+        while (current2 != null) {
+            res.insertNode(res,current2.data);
+            current2 = current2.next;
+        }
+        return res;
+    }
+
+    static Node reverse(Node head)
+    {
+        Node current=head;
+        Node previous=null;
+        Node next=null;
+        {
+            while(current!=null) {
+                next = current.next;
+                current.next = previous;
+                previous = current;
+                current = next;
+            }
+        }
+        return previous;
+    }
+
+    static void findMiddle(Node head)
+    {
+        Node current=head;
+
+        Node highPointer=null;
+        Node lowPointer=null;
+        while(current.next.next!=null)
+        {
+            lowPointer=current;
+            current=current.next;
+            highPointer=current.next.next;
+
+        }
+        System.out.println("middle "+lowPointer.data);
+    }
+
+    static void addAfterNode(Node head,int data,Node node)
+    {
+        Node current=head;
+        Node next=null;
+        Node newNode=new Node(data);
+        while(current.data!=node.data)
+        {
+            if(current.next.next!=null) {
+                current = current.next;
+                next = current.next;
+            }
+        }
+        current.next=newNode;
+        newNode.next=next;
+    }
+
+
+    static void addBeforeNode(Node head,int data,Node node)
+    {
+        Node current=head;
+        Node previous=null;
+        Node newNode=new Node(data);
+        while(current.data!=node.data)
+        {
+            previous=current;
+            current=current.next;
+        }
+        previous.next=newNode;
+        newNode.next=current;
+    }
+
+    static Node addAtBeginning(Node head,int data)
+    {
+        Node node=new Node(data);
+        node.next=head;
+        return node;
+    }
+
+    static void removeLastNode(Node head)
+    {
+        Node current=head;
+        Node previous=null;
+        while(current.next!=null)
+        {
+            previous=current;
+            current=current.next;
+        }
+        previous.next=null;
+    }
+
+    static void addAtLast(Node head,int data)
+    {
+        Node current= head;
+        Node node =new Node(data);
+        while(current.next!=null)
+        {
+            current=current.next;
+        }
+        current.next=node;
+
+    }
+
+      LinkedList insertNode(LinkedList list,int data) {
+        Node node=new Node(data);
+        if(list.head==null)
+        {
+            list.head=node;
+        }
+        else {
+            Node current=list.head;
+            while(current.next!=null)
+            {
+                current=current.next;
+            }
+            current.next=node;
+        }
+        return list;
+    }
+
+    static  void display(Node head)
+    {
+        Node current=head;
+        if(current==null)
+        {
+            System.out.println("No data present at LinkedList");
+        }
+        else {
+            while (current.next!=null)
+            {
+                System.out.print(current.data+" => ");
+                current=current.next;
+            }
+            System.out.println(current.data+" => null");
+        }
+
+    }
+
+    static void removeEvenNode(Node head)
+    {
+        Node current=head;
+        Node previous=null;
+        while(current.next!=null)
+        {
+            previous=current;
+            current=current.next;
+            previous.next=current.next;
+        }
+
+    }
+
+
+    static Node removeOddNode(Node head)
+    {
+        Node current=head;
+        Node previous=null;
+        Node newHead=null;
+        if(current.next!=null)
+        {
+            newHead=current.next;
+        }
+        while(current.next!=null)
+        {
+            previous=current;
+            current=current.next;
+            previous.next=current.next;
+        }
+        return newHead;
+    }
+
+    static Node mergeTwoLists(Node list1, Node list2) {
+        Node head = new Node(0);
+        Node prev = head;
+        Node p1 = list1, p2 = list2;
+
+        while(p1 != null && p2 != null){
+            if(p1.data < p2.data){
+                prev.next = p1;
+                prev = p1;
+                p1 = p1.next;
+            }else{
+                prev.next = p2;
+                prev = p2;
+                p2 = p2.next;
+            }
+        }
+
+        if(p1 != null)
+            prev.next = p1;
+
+        if(p2 != null)
+            prev.next = p2;
+
+        return head.next;
+
+    }
+
+    static Node swapPairs(Node head) {
+        if (head == null || head.next == null) return head;
+        Node temp = head.next;
+        head.next = swapPairs(temp.next);
+        temp.next = head;
+        return temp;
+    }
+
+    static Node rotateRight(Node head, int k) {  if(k<=0 || head == null || head.next == null) {
+        return head;
+    }
+        Node temp = head;
+        Node prev = null;
+        int length = 1;
+
+        while(temp.next!=null)
+        {
+            prev = temp;
+            temp = temp.next;
+            length++;
+        }
+        temp.next = head;
+        prev.next = null;
+
+        if(k != length) {
+            k = k % length;
+        }
+
+        return  rotateRight(temp,k-1);}
+
+    static Node deleteDuplicates(Node head) {
+        if(head==null || head.next == null)
+            return head;
+
+        if(head.data !=head.next.data)
+        {
+            head.next = deleteDuplicates(head.next);
+            return head;
+        }else{
+            int temp = head.data;
+            while(head!=null && head.data==temp)
+                head=head.next;
+            return deleteDuplicates(head);
+        }
+    }
+
+    static Node partition(Node head, int x) {
+        Node slist = new Node(0);
+        Node blist = new Node(0);
+
+        Node small = slist;
+        Node big = blist;
+
+        while (head != null) {
+            if (head.data < x) {
+                small.next = head;
+                small = small.next;
+            } else {
+                big.next = head;
+                big = big.next;
+            }
+
+            head = head.next;
+        }
+
+        small.next = blist.next;
+        big.next = null;
+
+        return slist.next;
+    }
+
+    static Node reverseBetween(Node head, int left, int right) {
+        if(head.next == null || left == right) {
+            return head;
+        }
+          Node prev = null;
+          Node current = head;
+          Node leftNode = null;
+
+        while(current.data != left) {
+            leftNode = current;
+            current = current.next;
+        }
+        while(current!= null && current.data<= right) {
+            Node next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        leftNode.next.next = current;
+        leftNode.next = prev;
+
+        return head;
+
+    }
+
+    public Node reverseKGroup(Node head, int k) {
+        Node temp = head;
+        int cnt = 0;
+
+        while(cnt < k)
+        {
+            if(temp == null) {
+                return head;
+            }
+            temp = temp.next;
+            cnt++;
+        }
+        Node prev = reverseKGroup(temp,k);
+        temp = head;
+        cnt = 0;
+        while(cnt<k) {
+            Node next = temp.next;
+            temp.next = prev;
+            prev = temp;
+            temp = next;
+            cnt++;
+        }
+           return prev;
+    }
+
+    public static class Node {
+        int data;
+        Node next;
+        Node(int data) {
+            this.data = data;
+        }
+    }
+
+}
+
