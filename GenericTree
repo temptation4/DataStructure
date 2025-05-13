@@ -1,0 +1,559 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class GenericTree {
+
+
+
+
+    static class Node
+
+    {
+
+        int data;
+        List<Node> children=new ArrayList<>();
+    }
+
+    public static void traversals(Node root) {
+        System.out.println("Node Pre " + root.data);
+
+        for(Node child: root.children){
+            System.out.println("Edge Pre " + root.data + "--" + child.data);
+            traversals(child);
+            System.out.println("Edge Post " + root.data + "--" + child.data);
+        }
+
+        System.out.println("Node Post " + root.data);
+    }
+
+
+    public static void levelOrderLinewiseZZ(Node node){
+        // write your code here
+        Stack<Node> ms=new Stack<>();
+        Stack<Node> cs=new Stack<>();
+        ms.add(node);
+        int level = 1;
+        while(ms.size()>0)
+        {
+            node=ms.pop();
+            System.out.print(node.data+" ");
+            if(level%2 != 0)
+            {
+                for(int i = 0;i<node.children.size();i++)
+                {
+                  Node child =  node.children.get(i);
+                    cs.push(child);
+                }
+
+            }
+            else
+            {
+                for(int i = node.children.size()-1;i>=0;i--)
+                {
+                    Node child =  node.children.get(i);
+                    cs.push(child);
+                }
+
+            }
+
+
+            if(ms.size()==0)
+            {
+                ms=cs;
+                cs=new Stack<>();
+                System.out.println();
+                level++;
+            }
+        }
+    }
+
+    public static void levelOrderLinewise(Node node){
+        // write your code here
+        Queue<Node> queue=new ArrayDeque<>();
+        queue.add(node);
+        Queue<Node> childQueue=new ArrayDeque<>();
+        while(queue.size()>0)
+        {
+            node=  queue.remove();
+            System.out.print(node.data+" ");
+            for(Node child: node.children){
+                childQueue.add(child);
+            }
+            if(queue.size() == 0)
+            {
+                queue = childQueue;
+                childQueue = new ArrayDeque<>();
+                System.out.println("");
+            }
+
+        }
+
+    }
+
+    public static void levelOrderLinewise2(Node node){
+        // write your code here
+        Queue<Node> queue=new ArrayDeque<>();
+        queue.add(node);
+        while(queue.size()>0)
+        {
+            int size=queue.size();
+            for(int i=0;i<size;i++) {
+                node = queue.remove();
+                System.out.print(node.data + " ");
+                for (Node child : node.children) {
+                    queue.add(child);
+                }
+
+            }
+            System.out.println("");
+        }
+
+    }
+
+    public static int size(Node node){
+      /*  int sz=0;
+        for(Node child:node.children)
+        {
+            int cs=size(child);
+            sz=sz+cs;
+        }
+        sz=sz+1;
+        return sz;*/
+        int size = 1;
+        for(Node child:node.children)
+        {
+            size = size +size(child);
+        }
+        return size;
+    }
+
+    static void mirror(Node node)
+    {
+        for(Node child: node.children)
+        {
+            mirror(child);
+        }
+        Collections.reverse(node.children);
+    }
+
+
+    static boolean mirrorImage(Node n1,Node n2)
+    {
+        if(n1.children.size()!=n2.children.size())
+        {
+            return false;
+        }
+
+        int i=0;
+        int j=n1.children.size()-1;
+        while(i>j)
+        {
+            Node c1=n1.children.get(i);
+            Node c2=n2.children.get(j);
+            if(!mirrorImage(c1,c2))
+            {
+                return false;
+            }
+            i++;
+            j--;
+        }
+
+        return true;
+
+    }
+
+    public static int height(Node node)
+    {
+        int height=-1;
+        for(Node child:node.children)
+        {
+            int ch=height(child);
+            height= Math.max(ch,height);
+
+        }
+        height=height+1;
+        return height;
+    }
+
+    public static int max(Node root){
+     /*   int max=Integer.MIN_VALUE;
+        for(Node child:node.children)
+        {
+            int cMax=max(child);
+            max=  Math.max(cMax,max);
+        }
+        max=  Math.max(node.data,max);
+        return max;*/
+        int maximum = root.data;
+        for (Node child : root.children) {
+            maximum = Math.max(maximum, max(child));
+        }
+
+        return maximum;
+    }
+
+    public static void display(Node node)
+    {
+        String str=node.data+" -> ";
+        for(Node child:node.children)
+        {
+            str=str+child.data+" , ";
+        }
+        str += ".";
+        System.out.println(str);
+
+        for(Node child:node.children)
+        {
+            display(child);
+        }
+
+    }
+
+    public static void removeLeaves(Node node)
+    {
+        for(int i = node.children.size()-1;i>=0;i--){
+            Node child = node.children.get(i);
+            int size = child.children.size();
+            if(size==0)
+            {
+                node.children.remove(i);
+            }
+            removeLeaves(child);
+        }
+    }
+
+    public static void linearizeTree(Node node)
+    {
+        for(Node child :node.children)
+        {
+            linearizeTree(child);
+        }
+
+        while(node.children.size()>1)
+        {
+            Node lc = node.children.remove(node.children.size()-1);
+            Node sl = node.children.get(node.children.size()-1);
+            Node slt = getTail(sl);
+            slt.children.add(lc);
+        }
+    }
+
+    public static Node linearizeTree2(Node node)
+    {
+        if(node.children.size() == 0)
+        {
+            return node;
+        }
+        Node lkt = linearizeTree2(node.children.get(node.children.size()-1));
+        while(node.children.size()>1)
+        {
+            Node last = node.children.remove(node.children.size()-1);
+            Node secondLast = node.children.get(node.children.size()-1);
+           Node slt =  linearizeTree2(secondLast);
+            slt.children.add(last);
+        }
+        return lkt;
+    }
+
+    public static Node getTail(Node node)
+    {
+        while(node.children.size() == 1)
+        {
+            node.children.get(0);
+        }
+        return node;
+
+    }
+
+    public static Node construct(int[] arr)
+    {
+        Node root=null;
+        Stack<Node> st=new Stack<>();
+        for(int i=0;i<arr.length;i++)
+        {
+            if(arr[i]==-1)
+            {
+                st.pop();
+            }
+            else
+            {
+                Node node = new Node();
+                node.data=arr[i];
+                if(st.size()>0) {
+
+                    st.peek().children.add(node);
+                }
+                else
+                {
+                    root=node;
+                }
+                st.push(node);
+            }
+
+        }
+        return root;
+    }
+
+    static void levelOrderTraversal(Node root)
+    {
+        Queue<Node> mq = new ArrayDeque<>();
+
+        mq.add(root);
+
+        while(mq.size() > 0){
+
+            // Pop 1 Node
+            Node curr = mq.remove();
+            System.out.print(curr.data + " ");
+
+            // Push Children in Queue
+            for(Node child: curr.children){
+                mq.add(child);
+            }
+
+
+        }
+
+
+    }
+
+    public static ArrayList nodeToPath(Node node,int data)
+    {
+        if(node.data == data)
+        {
+            ArrayList<Node> list = new ArrayList<>();
+            list.add(node);
+            return list;
+        }
+
+        for(Node child : node.children)
+        {
+            ArrayList<Node> ptc = nodeToPath(child,data);
+            {
+                if(ptc.size()>0)
+                {
+                    ptc.add(child);
+                    return ptc;
+                }
+            }
+        }
+
+        return new ArrayList<>();
+    }
+    public static boolean find(Node node,int data)
+    {
+        if(node.data == data)
+        {
+            return true;
+        }
+
+        for(Node child : node.children)
+        {
+             find(child,data);
+        }
+
+        return false;
+    }
+
+    public static int lowestCommonAncister(Node node , int data1,int data2)
+    {
+      ArrayList<Node> listd1 =  nodeToPath(node,data1);
+        ArrayList<Node> listd2 =  nodeToPath(node,data1);
+        int i = listd1.size()-1;
+        int j = listd2.size()-1;
+        while(i>=0 && j >=0 && listd1.get(i) == listd2.get(j))
+        {
+            i--;
+            j--;
+        }
+        i++;
+        j++;
+        return listd1.get(i).data;
+
+    }
+
+    public static int distanceBetween2Node(Node node , int data1,int data2)
+    {
+        ArrayList<Node> listd1 =  nodeToPath(node,data1);
+        ArrayList<Node> listd2 =  nodeToPath(node,data1);
+        int i = listd1.size()-1;
+        int j = listd2.size()-1;
+        while(i>=0 && j >=0 && listd1.get(i) == listd2.get(j))
+        {
+            i--;
+            j--;
+        }
+        i++;
+        j++;
+        return i+j;
+
+    }
+
+    public static boolean areSymmetric(Node node)
+    {
+       return mirrorImage(node,node);
+    }
+
+    public static boolean areSimilar(Node node1,Node node2)
+    {
+        if(node1.children.size() != node2.children.size())
+        {
+            return false;
+        }
+
+        for(int i = 0;i<node1.children.size();i++)
+        {
+            Node c1 = node1.children.get(i);
+            Node c2 = node2.children.get(i);
+            if(!areSimilar(c1,c2))
+            {
+                return false;
+            }
+
+        }
+        return true;
+    }
+int  state;
+    Node predecessor;
+    Node successor;
+    public  void predecessorAndSuccessor(Node node,int data)
+    {
+        if(state ==0)
+        {
+           if(node.data == data)
+           {
+              state = 1;
+           }
+           else {
+               predecessor = node;
+           }
+        }
+        else if(state == 1) {
+
+            state = 2;
+            successor = node;
+
+        }
+        for(Node child : node.children)
+        {
+            predecessorAndSuccessor(child,data);
+        }
+
+    }
+
+    int ceil = Integer.MAX_VALUE;
+    int floor = Integer.MIN_VALUE;
+
+    public void ceilAndFloor(Node node,int data)
+    {
+        if(node.data>data)
+        {
+            if(node.data<ceil)
+            {
+                ceil = node.data;
+            }
+        }
+
+        if(node.data<data)
+        {
+            if(node.data>floor)
+            {
+                floor = node.data;
+
+            }
+        }
+
+        for(Node child : node.children)
+        {
+            ceilAndFloor(child,data);
+        }
+
+    }
+
+    public int kthLongestElement(Node node,int k)
+    {
+        for(int i = 0;i<k;i++)
+        {
+            ceilAndFloor(node,ceil);
+            ceil = floor;
+            floor = Integer.MIN_VALUE;
+        }
+        return floor;
+    }
+
+    int ms = Integer.MIN_VALUE;
+            int msn = 0; ;
+    public int maxSumSubTree(Node node)
+    {
+        int sum = 0;
+        for(Node child :node.children)
+        {
+          int cs =  maxSumSubTree(child);
+          sum+= cs;
+        }
+        sum+=node.data;
+        sum = Math.max(sum,ms);
+        sum = Math.max(sum,msn);
+        return sum;
+    }
+
+    int diameter = 0;
+    int calculateDiameter(Node node)
+    {
+        int deepestHeight = -1;
+        int secondDeepestHeight = -1;
+        for(Node child : node.children)
+        {
+           int  currentHeight = calculateDiameter(child);
+           if(currentHeight>deepestHeight)
+           {
+               secondDeepestHeight = deepestHeight;
+               deepestHeight = currentHeight;
+           }
+           if(currentHeight>secondDeepestHeight)
+           {
+               secondDeepestHeight = currentHeight;
+           }
+        }
+
+        if(deepestHeight+secondDeepestHeight+2>diameter)
+        {
+            diameter = deepestHeight+secondDeepestHeight+2;
+        }
+
+        deepestHeight+=1;
+        return deepestHeight;
+
+    }
+
+
+    public static void main(String[] args) throws Exception
+    {
+        GenericTree tree = new GenericTree();
+        int[] arr = {10,20,50,-1,60,-1,-1,30,70,-1,80,110,-1,120,-1,-1,90,-1,-1,40,100,-1,-1,-1};
+      //  int[] arr1 = {10,20,50,-1,60,-1,-1,30,70,-1,80,110,-1,-1,90,-1,-1,40,100,-1,-1,-1};
+
+        Node root = construct(arr);
+
+      //  System.out.println( tree.calculateDiameter(root));
+      //  System.out.println(tree.diameter);
+       // System.out.println(tree.ceil);
+        //System.out.println("kth largest element "+tree.floor);
+       // tree.predecessorAndSuccessor(root,90);
+      //  System.out.println(tree.predecessor.data);
+      //  System.out.println(tree.successor.data);
+     //   Node root1 = construct(arr1);
+       // System.out.println(areSimilar(root,root1));
+       // linearizeTree2(root);
+      //  mirror(root);
+        levelOrderLinewise2(root);
+
+      //  display(root);
+       // levelOrderLinewise2(root);
+       // System.out.print(size(root));
+
+    }
+}
+
